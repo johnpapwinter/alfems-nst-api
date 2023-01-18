@@ -1,7 +1,22 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpException, HttpStatus } from "@nestjs/common";
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  HttpException,
+  HttpStatus,
+  Query,
+  DefaultValuePipe,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { ShipService } from './ship.service';
 import { CreateShipDto } from './dto/create-ship.dto';
 import { UpdateShipDto } from './dto/update-ship.dto';
+import { Pagination } from 'nestjs-typeorm-paginate';
+import { Ship } from './entities/ship.entity';
 
 @Controller('ship')
 export class ShipController {
@@ -13,8 +28,11 @@ export class ShipController {
   }
 
   @Get()
-  async findAll() {
-    return await this.shipService.findAll();
+  async getAll(
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit = 10,
+  ): Promise<Pagination<Ship>> {
+    return this.shipService.getAll({ page, limit });
   }
 
   @Get(':id')

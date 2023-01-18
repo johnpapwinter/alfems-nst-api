@@ -4,6 +4,11 @@ import { UpdateShipDto } from './dto/update-ship.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Ship } from './entities/ship.entity';
 import { Repository } from 'typeorm';
+import {
+  IPaginationOptions,
+  paginate,
+  Pagination,
+} from 'nestjs-typeorm-paginate';
 
 @Injectable()
 export class ShipService {
@@ -16,14 +21,17 @@ export class ShipService {
     return this.shipRepository.save(createShipDto);
   }
 
-  async findAll(): Promise<Ship[]> {
-    return this.shipRepository.find();
+  async getAll(options: IPaginationOptions): Promise<Pagination<Ship>> {
+    return paginate<Ship>(this.shipRepository, options);
   }
 
   async findOne(id: string): Promise<Ship> {
     const ship = await this.shipRepository.findOneBy({ id });
     if (!ship) {
-      throw new HttpException('The ship does not exist', HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        'The ship does not exist',
+        HttpStatus.BAD_REQUEST,
+      );
     } else {
       return this.shipRepository.findOneBy({ id });
     }
@@ -32,7 +40,10 @@ export class ShipService {
   async update(id: string, updateShipDto: UpdateShipDto) {
     const ship = await this.shipRepository.findOneBy({ id });
     if (!ship) {
-      throw new HttpException('The ship does not exist', HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        'The ship does not exist',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     return this.shipRepository.update(id, updateShipDto);
   }
@@ -40,7 +51,10 @@ export class ShipService {
   async remove(id: string) {
     const ship = await this.shipRepository.findOneBy({ id });
     if (!ship) {
-      throw new HttpException('The ship does not exist', HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        'The ship does not exist',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     return this.shipRepository.delete(id);
   }
