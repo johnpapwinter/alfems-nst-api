@@ -1,26 +1,30 @@
 import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { User } from './entities/user.entity';
+import { Repository } from 'typeorm';
+import { Role } from '../role/entities/role.entity';
+import { RoleEnum } from '../role/role.enum';
 
 @Injectable()
 export class UserService {
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+  constructor(
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
+    @InjectRepository(Role)
+    private roleRepository: Repository<Role>,
+  ) {}
+  async create(createUserDto: CreateUserDto) {
+    const name = RoleEnum.User;
+    const role = await this.roleRepository.findOneBy({ name });
+    createUserDto.roles = [];
+    createUserDto.roles.push(role);
+    console.log(createUserDto);
+    return null;
+    // return this.userRepository.create(createUserDto);
   }
 
-  findAll() {
-    return `This action returns all user`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
-  }
-
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async findOne(username: string) {
+    return await this.userRepository.findOneBy({ username });
   }
 }
