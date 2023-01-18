@@ -6,19 +6,22 @@ export class Ship {
   @PrimaryGeneratedColumn({ name: 'id', type: 'bigint' })
   id: string;
 
+  @Column({ name: 'hud' })
+  hud: string;
+
   @Column({ name: 'name' })
   name: string;
 
   @Column({ name: 'type' })
   type: string;
 
-  @Column({ name: 'crew' })
+  @Column({ name: 'crew', nullable: true })
   crew: number;
 
-  @Column({ name: 'passengers' })
+  @Column({ name: 'passengers', nullable: true })
   passengers: number;
 
-  @Column({ name: 'fighters' })
+  @Column({ name: 'fighters', nullable: true })
   fighters: number;
 
   @ManyToOne(() => TaskForce, (taskForce) => taskForce.ships)

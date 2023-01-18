@@ -1,1 +1,3 @@
-export class CreateTaskForceDto {}
+export class CreateTaskForceDto {
+  name: string;
+}
