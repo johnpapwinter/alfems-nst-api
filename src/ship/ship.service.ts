@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { CreateShipDto } from './dto/create-ship.dto';
 import { UpdateShipDto } from './dto/update-ship.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -21,14 +21,27 @@ export class ShipService {
   }
 
   async findOne(id: string): Promise<Ship> {
-    return this.shipRepository.findOneBy({ id });
+    const ship = await this.shipRepository.findOneBy({ id });
+    if (!ship) {
+      throw new HttpException('The ship does not exist', HttpStatus.NOT_FOUND);
+    } else {
+      return this.shipRepository.findOneBy({ id });
+    }
   }
 
   async update(id: string, updateShipDto: UpdateShipDto) {
+    const ship = await this.shipRepository.findOneBy({ id });
+    if (!ship) {
+      throw new HttpException('The ship does not exist', HttpStatus.NOT_FOUND);
+    }
     return this.shipRepository.update(id, updateShipDto);
   }
 
   async remove(id: string) {
+    const ship = await this.shipRepository.findOneBy({ id });
+    if (!ship) {
+      throw new HttpException('The ship does not exist', HttpStatus.NOT_FOUND);
+    }
     return this.shipRepository.delete(id);
   }
 }
