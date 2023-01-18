@@ -28,25 +28,9 @@ export class AuthController {
     return this.userService.create(newUserDto);
   }
 
-  @Post('signin')
-  async loginUser(@Body() loginUserDto: CreateUserDto) {
-    // console.log(loginUserDto);
-    const user = await this.userService.findOne(loginUserDto.username);
-    console.log('controller method');
-    console.log(user);
-    console.log(user.roles);
-    const isMatch = await bcrypt.compare(loginUserDto.password, user.password);
-    if (isMatch) {
-      return `Logged in ${loginUserDto.username}`;
-    } else {
-      return `Unauthorized`;
-    }
-  }
-
   @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(@Request() req) {
-    console.log('-----------------------');
     return this.authService.login(req.user);
   }
 
