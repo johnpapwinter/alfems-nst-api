@@ -19,12 +19,14 @@ export class UserService {
     const role = await this.roleRepository.findOneBy({ name });
     createUserDto.roles = [];
     createUserDto.roles.push(role);
-    console.log(createUserDto);
-    return null;
-    // return this.userRepository.create(createUserDto);
+    // return null;
+    return this.userRepository.save(createUserDto);
   }
 
-  async findOne(username: string) {
-    return await this.userRepository.findOneBy({ username });
+  async findOne(username: string): Promise<User> {
+    return await this.userRepository.findOne({
+      where: { username: username },
+      relations: { roles: true },
+    });
   }
 }
