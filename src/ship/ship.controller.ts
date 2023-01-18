@@ -8,27 +8,27 @@ export class ShipController {
   constructor(private readonly shipService: ShipService) {}
 
   @Post()
-  create(@Body() createShipDto: CreateShipDto) {
+  async create(@Body() createShipDto: CreateShipDto) {
     return this.shipService.create(createShipDto);
   }
 
   @Get()
-  findAll() {
-    return this.shipService.findAll();
+  async findAll() {
+    return await this.shipService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.shipService.findOne(+id);
+  async findOne(@Param('id') id: string) {
+    return await this.shipService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateShipDto: UpdateShipDto) {
-    return this.shipService.update(+id, updateShipDto);
+  async update(@Param('id') id: string, @Body() updateShipDto: UpdateShipDto) {
+    return await this.shipService.update(id, updateShipDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.shipService.remove(+id);
+  async remove(@Param('id') id: string) {
+    return await this.shipService.remove(id);
   }
 }

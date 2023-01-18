@@ -1,26 +1,34 @@
 import { Injectable } from '@nestjs/common';
 import { CreateShipDto } from './dto/create-ship.dto';
 import { UpdateShipDto } from './dto/update-ship.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Ship } from './entities/ship.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class ShipService {
-  create(createShipDto: CreateShipDto) {
-    return 'This action adds a new ship';
+  constructor(
+    @InjectRepository(Ship)
+    private shipRepository: Repository<Ship>,
+  ) {}
+
+  async create(createShipDto: CreateShipDto) {
+    return this.shipRepository.save(createShipDto);
   }
 
-  findAll() {
-    return `This action returns all ship`;
+  async findAll(): Promise<Ship[]> {
+    return this.shipRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} ship`;
+  async findOne(id: string): Promise<Ship> {
+    return this.shipRepository.findOneBy({ id });
   }
 
-  update(id: number, updateShipDto: UpdateShipDto) {
-    return `This action updates a #${id} ship`;
+  async update(id: string, updateShipDto: UpdateShipDto) {
+    return this.shipRepository.update(id, updateShipDto);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} ship`;
+  async remove(id: string) {
+    return this.shipRepository.delete(id);
   }
 }
