@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateShipDto } from './dto/create-ship.dto';
 import { UpdateShipDto } from './dto/update-ship.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -23,7 +23,7 @@ export class ShipService {
   async findOne(id: string): Promise<Ship> {
     const ship = await this.shipRepository.findOneBy({ id });
     if (!ship) {
-      throw new HttpException('The ship does not exist', HttpStatus.NOT_FOUND);
+      throw new HttpException('The ship does not exist', HttpStatus.BAD_REQUEST);
     } else {
       return this.shipRepository.findOneBy({ id });
     }
@@ -32,7 +32,7 @@ export class ShipService {
   async update(id: string, updateShipDto: UpdateShipDto) {
     const ship = await this.shipRepository.findOneBy({ id });
     if (!ship) {
-      throw new HttpException('The ship does not exist', HttpStatus.NOT_FOUND);
+      throw new HttpException('The ship does not exist', HttpStatus.BAD_REQUEST);
     }
     return this.shipRepository.update(id, updateShipDto);
   }
@@ -40,7 +40,7 @@ export class ShipService {
   async remove(id: string) {
     const ship = await this.shipRepository.findOneBy({ id });
     if (!ship) {
-      throw new HttpException('The ship does not exist', HttpStatus.NOT_FOUND);
+      throw new HttpException('The ship does not exist', HttpStatus.BAD_REQUEST);
     }
     return this.shipRepository.delete(id);
   }
