@@ -1,26 +1,65 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateTaskForceDto } from './dto/create-task-force.dto';
 import { UpdateTaskForceDto } from './dto/update-task-force.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { TaskForce } from './entities/task-force.entity';
+import { Repository } from 'typeorm';
+import {
+  IPaginationOptions,
+  paginate,
+  Pagination,
+} from 'nestjs-typeorm-paginate';
 
 @Injectable()
 export class TaskForceService {
-  create(createTaskForceDto: CreateTaskForceDto) {
-    return 'This action adds a new taskForce';
+  constructor(
+    @InjectRepository(TaskForce)
+    private taskForceRepository: Repository<TaskForce>,
+  ) {}
+
+  async create(createTaskForceDto: CreateTaskForceDto) {
+    return this.taskForceRepository.save(createTaskForceDto);
   }
 
-  findAll() {
+  async findAll() {
     return `This action returns all taskForce`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} taskForce`;
+  async getAll(options: IPaginationOptions): Promise<Pagination<TaskForce>> {
+    return paginate<TaskForce>(this.taskForceRepository, options);
   }
 
-  update(id: number, updateTaskForceDto: UpdateTaskForceDto) {
-    return `This action updates a #${id} taskForce`;
+  async findOne(id: string): Promise<TaskForce> {
+    const taskForce = await this.taskForceRepository.findOneBy({ id });
+    if (!taskForce) {
+      throw new HttpException(
+        'This task force does not exist',
+        HttpStatus.BAD_REQUEST,
+      );
+    } else {
+      return this.taskForceRepository.findOneBy({ id });
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} taskForce`;
+  async update(id: string, updateTaskForceDto: UpdateTaskForceDto) {
+    const taskForce = await this.taskForceRepository.findOneBy({ id });
+    if (!taskForce) {
+      throw new HttpException(
+        'This task force does not exist',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    return this.taskForceRepository.update(id, updateTaskForceDto);
+  }
+
+  async remove(id: string) {
+    const taskForce = await this.taskForceRepository.findOneBy({ id });
+    if (!taskForce) {
+      throw new HttpException(
+        'This task force does not exist',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    return this.taskForceRepository.delete(id);
   }
 }

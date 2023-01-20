@@ -6,8 +6,6 @@ import {
   Patch,
   Param,
   Delete,
-  HttpException,
-  HttpStatus,
   Query,
   DefaultValuePipe,
   ParseIntPipe,
