@@ -5,7 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Ship } from './entities/ship.entity';
 import { APP_GUARD } from "@nestjs/core";
 import { RolesGuard } from "../auth/role/roles.guard";
-import { JwtModule, JwtService } from "@nestjs/jwt";
+import { JwtService } from "@nestjs/jwt";
 
 @Module({
   imports: [TypeOrmModule.forFeature([Ship])],

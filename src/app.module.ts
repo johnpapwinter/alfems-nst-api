@@ -11,8 +11,7 @@ import { User } from './auth/user/entities/user.entity';
 import { Role } from './auth/role/entities/role.entity';
 import { APP_GUARD } from "@nestjs/core";
 import { JwtAuthGuard } from "./auth/jwt-auth.guard";
-import { JwtStrategy } from "./auth/jwt.strategy";
-import { JwtModule, JwtService } from "@nestjs/jwt";
+import { JwtService } from "@nestjs/jwt";
 
 @Module({
   imports: [
