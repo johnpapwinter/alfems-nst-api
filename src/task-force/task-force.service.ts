@@ -35,13 +35,17 @@ export class TaskForceService {
   }
 
   async findOne(id: string): Promise<TaskForce> {
-    const taskForce = await this.taskForceRepository.findOneBy({ id });
+    const taskForce = await this.taskForceRepository.findOne({
+      where: { id },
+      relations: { ships: true },
+    });
     if (!taskForce) {
       throw new HttpException(
         'This task force does not exist',
         HttpStatus.BAD_REQUEST,
       );
     } else {
+      taskForce.ships.forEach(x => console.log(x.name));
       return this.taskForceRepository.findOneBy({ id });
     }
   }
@@ -98,5 +102,18 @@ export class TaskForceService {
     await this.shipRepository.update(shipId, ship);
 
     return `${ship.name} was removed from ${tf.name}`
+  }
+
+
+  async getAllOfTaskForce(tfId: string, options: IPaginationOptions): Promise<Pagination<Ship>> {
+    const tf = await this.taskForceRepository.findOneBy({ id: tfId });
+    if (!tf) {
+      throw new HttpException('The TF does not exist', HttpStatus.NOT_FOUND);
+    }
+
+    const queryBuilder = this.shipRepository.createQueryBuilder('ships')
+      .where('ships.taskForceId = :id', { id: tfId })
+
+    return paginate<Ship>(queryBuilder, options);
   }
 }

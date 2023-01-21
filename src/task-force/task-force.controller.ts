@@ -15,6 +15,7 @@ import { CreateTaskForceDto } from './dto/create-task-force.dto';
 import { UpdateTaskForceDto } from './dto/update-task-force.dto';
 import { Pagination } from 'nestjs-typeorm-paginate';
 import { TaskForce } from './entities/task-force.entity';
+import { Ship } from "../ship/entities/ship.entity";
 
 @Controller('task-force')
 export class TaskForceController {
@@ -66,4 +67,15 @@ export class TaskForceController {
   ) {
     return this.taskForceService.removeVessel(tfId, shipId);
   }
+
+  @Get(':id/vessels')
+  async getAllOfTaskForce(
+    @Param('id') id: string,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit = 10,
+  ): Promise<Pagination<Ship>> {
+
+    return this.taskForceService.getAllOfTaskForce(id, { page, limit });
+  }
+
 }
