@@ -10,7 +10,6 @@ import {
   Pagination,
 } from 'nestjs-typeorm-paginate';
 import { Ship } from '../ship/entities/ship.entity';
-import { ShipService } from "../ship/ship.service";
 
 @Injectable()
 export class TaskForceService {
@@ -104,14 +103,14 @@ export class TaskForceService {
   }
 
 
-  async getAllOfTaskForce(tfId: string, options: IPaginationOptions): Promise<Pagination<Ship>> {
-    const tf = await this.taskForceRepository.findOneBy({ id: tfId });
+  async getAllOfTaskForce(id: string, options: IPaginationOptions): Promise<Pagination<Ship>> {
+    const tf = await this.taskForceRepository.findOneBy({ id: id });
     if (!tf) {
       throw new HttpException('The TF does not exist', HttpStatus.NOT_FOUND);
     }
 
     const queryBuilder = this.shipRepository.createQueryBuilder('ships')
-      .where('ships.taskForceId = :id', { id: tfId })
+      .where('ships.taskForceId = :id', { id: id })
 
     return paginate<Ship>(queryBuilder, options);
   }
