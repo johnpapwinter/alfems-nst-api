@@ -9,12 +9,17 @@ import {
   paginate,
   Pagination,
 } from 'nestjs-typeorm-paginate';
+import { Ship } from '../ship/entities/ship.entity';
+import { ShipService } from "../ship/ship.service";
 
 @Injectable()
 export class TaskForceService {
   constructor(
     @InjectRepository(TaskForce)
     private taskForceRepository: Repository<TaskForce>,
+    @InjectRepository(Ship)
+    private shipRepository: Repository<Ship>,
+    private shipService: ShipService,
   ) {}
 
   async create(createTaskForceDto: CreateTaskForceDto) {
@@ -61,5 +66,37 @@ export class TaskForceService {
       );
     }
     return this.taskForceRepository.delete(id);
+  }
+
+  async assignVessel(tfId: string, shipId: string) {
+    const ship = await this.shipRepository.findOneBy({ id: shipId });
+    if (!ship) {
+      throw new HttpException('The ship does not exist', HttpStatus.NOT_FOUND);
+    }
+    const tf = await this.taskForceRepository.findOneBy({ id: tfId });
+    if (!tf) {
+      throw new HttpException('The TF does not exist', HttpStatus.NOT_FOUND);
+    }
+
+    ship.taskForce = tf;
+    await this.shipRepository.update(shipId, ship);
+
+    return `${ship.name} was assigned to ${tf.name}`
+  }
+
+  async removeVessel(tfId: string, shipId: string) {
+    const ship = await this.shipRepository.findOneBy({ id: shipId });
+    if (!ship) {
+      throw new HttpException('The ship does not exist', HttpStatus.NOT_FOUND);
+    }
+    const tf = await this.taskForceRepository.findOneBy({ id: tfId });
+    if (!tf) {
+      throw new HttpException('The TF does not exist', HttpStatus.NOT_FOUND);
+    }
+
+    ship.taskForce = null;
+    await this.shipRepository.update(shipId, ship);
+
+    return `${ship.name} was removed from ${tf.name}`
   }
 }

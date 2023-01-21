@@ -8,7 +8,7 @@ import {
   Delete,
   Query,
   DefaultValuePipe,
-  ParseIntPipe,
+  ParseIntPipe, Put
 } from '@nestjs/common';
 import { TaskForceService } from './task-force.service';
 import { CreateTaskForceDto } from './dto/create-task-force.dto';
@@ -49,5 +49,21 @@ export class TaskForceController {
   @Delete(':id')
   async remove(@Param('id') id: string) {
     return await this.taskForceService.remove(id);
+  }
+
+  @Put('assign/:tfId/:shipId')
+  async assignVessel(
+    @Param('tfId') tfId: string,
+    @Param('shipId') shipId: string,
+  ) {
+    return this.taskForceService.assignVessel(tfId, shipId);
+  }
+
+  @Put('remove/:tfId/:shipId')
+  async removeVessel(
+    @Param('tfId') tfId: string,
+    @Param('shipId') shipId: string,
+  ) {
+    return this.taskForceService.removeVessel(tfId, shipId);
   }
 }
