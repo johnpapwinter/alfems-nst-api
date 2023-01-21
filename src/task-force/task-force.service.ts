@@ -19,7 +19,6 @@ export class TaskForceService {
     private taskForceRepository: Repository<TaskForce>,
     @InjectRepository(Ship)
     private shipRepository: Repository<Ship>,
-    private shipService: ShipService,
   ) {}
 
   async create(createTaskForceDto: CreateTaskForceDto) {

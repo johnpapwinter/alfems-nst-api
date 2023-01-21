@@ -9,6 +9,6 @@ import { Ship } from '../ship/entities/ship.entity';
 @Module({
   imports: [TypeOrmModule.forFeature([TaskForce, Ship])],
   controllers: [TaskForceController],
-  providers: [TaskForceService, ShipService],
+  providers: [TaskForceService],
 })
 export class TaskForceModule {}
