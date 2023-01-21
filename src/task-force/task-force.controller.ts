@@ -16,6 +16,7 @@ import { UpdateTaskForceDto } from './dto/update-task-force.dto';
 import { Pagination } from 'nestjs-typeorm-paginate';
 import { TaskForce } from './entities/task-force.entity';
 import { Ship } from "../ship/entities/ship.entity";
+import { Public } from "../auth/public.decorator";
 
 @Controller('task-force')
 export class TaskForceController {
@@ -68,6 +69,7 @@ export class TaskForceController {
     return this.taskForceService.removeVessel(tfId, shipId);
   }
 
+  @Public()
   @Get(':id/vessels')
   async getAllOfTaskForce(
     @Param('id') id: string,

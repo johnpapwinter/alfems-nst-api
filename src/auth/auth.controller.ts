@@ -15,6 +15,7 @@ import { JwtAuthGuard } from './jwt-auth.guard';
 import { Roles } from './role/roles.decorator';
 import { RoleEnum } from './role/role.enum';
 import { RolesGuard } from './role/roles.guard';
+import { Public } from "./public.decorator";
 
 @Controller('auth')
 export class AuthController {
@@ -23,6 +24,7 @@ export class AuthController {
     private authService: AuthService,
   ) {}
 
+  @Public()
   @Post('signup')
   async signupUser(@Body() newUserDto: CreateUserDto) {
     const salt = await bcrypt.genSalt();
@@ -31,6 +33,7 @@ export class AuthController {
     return this.userService.create(newUserDto);
   }
 
+  @Public()
   @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(@Request() req) {

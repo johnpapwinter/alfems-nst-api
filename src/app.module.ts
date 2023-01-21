@@ -9,6 +9,8 @@ import { TaskForce } from './task-force/entities/task-force.entity';
 import { AuthModule } from './auth/auth.module';
 import { User } from './auth/user/entities/user.entity';
 import { Role } from './auth/role/entities/role.entity';
+import { APP_GUARD } from "@nestjs/core";
+import { JwtAuthGuard } from "./auth/jwt-auth.guard";
 
 @Module({
   imports: [
@@ -28,6 +30,12 @@ import { Role } from './auth/role/entities/role.entity';
     AuthModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard,
+    }
+  ],
 })
 export class AppModule {}
