@@ -24,10 +24,6 @@ export class TaskForceService {
     return this.taskForceRepository.save(createTaskForceDto);
   }
 
-  async findAll() {
-    return `This action returns all taskForce`;
-  }
-
   async getAll(options: IPaginationOptions): Promise<Pagination<TaskForce>> {
     return paginate<TaskForce>(this.taskForceRepository, options);
   }
