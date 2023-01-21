@@ -11,10 +11,6 @@ import * as bcrypt from 'bcrypt';
 import { CreateUserDto } from './user/dto/create-user.dto';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './local-auth.guard';
-import { JwtAuthGuard } from './jwt-auth.guard';
-import { Roles } from './role/roles.decorator';
-import { RoleEnum } from './role/role.enum';
-import { RolesGuard } from './role/roles.guard';
 import { Public } from "./public.decorator";
 
 @Controller('auth')
@@ -40,16 +36,10 @@ export class AuthController {
     return this.authService.login(req.user);
   }
 
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @Get('profile')
   getProfile(@Request() req) {
     return req.user;
   }
 
-  @Post('check')
-  @Roles(RoleEnum.Admin)
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  async testCheck() {
-    return 'APPROVED';
-  }
 }
