@@ -12,6 +12,8 @@ import { Role } from './auth/role/entities/role.entity';
 import { APP_GUARD } from "@nestjs/core";
 import { JwtAuthGuard } from "./auth/jwt-auth.guard";
 import { JwtService } from "@nestjs/jwt";
+import { ShipAudit } from "./ship/entities/ship.audit.entity";
+import { AuditingSubscriber } from "typeorm-auditing";
 
 @Module({
   imports: [
@@ -22,7 +24,8 @@ import { JwtService } from "@nestjs/jwt";
       username: 'postgres',
       password: 'password',
       database: 'alfemsdb',
-      entities: [Ship, TaskForce, User, Role],
+      entities: [Ship, TaskForce, User, Role, ShipAudit],
+      subscribers: [AuditingSubscriber],
       synchronize: true,
       autoLoadEntities: true,
     }),

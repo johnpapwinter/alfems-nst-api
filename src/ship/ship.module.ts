@@ -6,9 +6,10 @@ import { Ship } from './entities/ship.entity';
 import { APP_GUARD } from "@nestjs/core";
 import { RolesGuard } from "../auth/role/roles.guard";
 import { JwtService } from "@nestjs/jwt";
+import { ShipAudit } from "./entities/ship.audit.entity";
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Ship])],
+  imports: [TypeOrmModule.forFeature([Ship, ShipAudit])],
   controllers: [ShipController],
   providers: [
     ShipService,
