@@ -7,7 +7,7 @@ import {
   Param,
   ParseIntPipe,
   Patch,
-  Post,
+  Post, Put,
   Query, UseGuards
 } from "@nestjs/common";
 import { ShipService } from "./ship.service";
@@ -45,7 +45,7 @@ export class ShipController {
 
   @Roles(RoleEnum.Admin)
   @UseGuards(RolesGuard)
-  @Patch(':id')
+  @Put(':id')
   async update(@Param('id') id: string, @Body() updateShipDto: UpdateShipDto) {
     return await this.shipService.update(id, updateShipDto);
   }
