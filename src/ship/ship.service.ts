@@ -45,7 +45,7 @@ export class ShipService {
         HttpStatus.BAD_REQUEST,
       );
     }
-    return this.shipRepository.update(id, updateShipDto);
+    return await this.shipRepository.update(id, updateShipDto);
   }
 
   async remove(id: string) {
