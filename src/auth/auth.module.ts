@@ -33,7 +33,7 @@ import { RolesGuard } from './role/roles.guard';
     TypeOrmModule.forFeature([User, Role]),
     JwtModule.register({
       secret: jwtConstants.secret,
-      signOptions: { expiresIn: '10000m' },
+      signOptions: { expiresIn: '10080m' },
     }),
   ],
   controllers: [AuthController],
