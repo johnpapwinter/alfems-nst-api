@@ -7,17 +7,19 @@ import {
   Param,
   ParseIntPipe,
   Patch,
-  Post, Put,
-  Query, UseGuards
-} from "@nestjs/common";
-import { ShipService } from "./ship.service";
-import { CreateShipDto } from "./dto/create-ship.dto";
-import { UpdateShipDto } from "./dto/update-ship.dto";
-import { Pagination } from "nestjs-typeorm-paginate";
-import { Ship } from "./entities/ship.entity";
-import { Roles } from "../auth/role/roles.decorator";
-import { RoleEnum } from "../auth/role/role.enum";
-import { RolesGuard } from "../auth/role/roles.guard";
+  Post,
+  Put,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
+import { ShipService } from './ship.service';
+import { CreateShipDto } from './dto/create-ship.dto';
+import { UpdateShipDto } from './dto/update-ship.dto';
+import { Pagination } from 'nestjs-typeorm-paginate';
+import { Ship } from './entities/ship.entity';
+import { Roles } from '../auth/role/roles.decorator';
+import { RoleEnum } from '../auth/role/role.enum';
+import { RolesGuard } from '../auth/role/roles.guard';
 
 @Controller('ship')
 export class ShipController {
@@ -45,7 +47,7 @@ export class ShipController {
 
   @Roles(RoleEnum.Admin)
   @UseGuards(RolesGuard)
-  @Put(':id')
+  @Patch(':id')
   async update(@Param('id') id: string, @Body() updateShipDto: UpdateShipDto) {
     return await this.shipService.update(id, updateShipDto);
   }
@@ -55,5 +57,10 @@ export class ShipController {
   @Delete(':id')
   async remove(@Param('id') id: string) {
     return await this.shipService.remove(id);
+  }
+
+  // @Get()
+  async findAll() {
+    return await this.shipService.findAll();
   }
 }
