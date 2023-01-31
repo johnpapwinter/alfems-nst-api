@@ -26,7 +26,9 @@ export class ShipService {
   }
 
   async getAll(options: IPaginationOptions): Promise<Pagination<Ship>> {
-    return paginate<Ship>(this.shipRepository, options);
+    const queryBuilder = this.shipRepository.createQueryBuilder('ship');
+    queryBuilder.orderBy(`ship.id`);
+    return paginate<Ship>(queryBuilder, options);
   }
 
   async findOne(id: string): Promise<Ship> {

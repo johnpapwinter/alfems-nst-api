@@ -36,6 +36,7 @@ export class ShipController {
   async getAll(
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit = 10,
+    @Query('sortBy') sortBy?: string,
   ): Promise<Pagination<Ship>> {
     return this.shipService.getAll({ page, limit });
   }
