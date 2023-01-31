@@ -21,6 +21,10 @@ export class ShipService {
     return this.shipRepository.save(createShipDto);
   }
 
+  async findAll(): Promise<Ship[]> {
+    return this.shipRepository.find();
+  }
+
   async getAll(options: IPaginationOptions): Promise<Pagination<Ship>> {
     return paginate<Ship>(this.shipRepository, options);
   }
