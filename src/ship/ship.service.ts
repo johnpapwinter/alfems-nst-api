@@ -25,9 +25,18 @@ export class ShipService {
     return this.shipRepository.find();
   }
 
-  async getAll(options: IPaginationOptions): Promise<Pagination<Ship>> {
+  async getAll(
+    options: IPaginationOptions,
+    sortBy: string,
+    sortOrder: number,
+  ): Promise<Pagination<Ship>> {
     const queryBuilder = this.shipRepository.createQueryBuilder('ship');
-    queryBuilder.orderBy(`ship.id`);
+    // @ts-ignore
+    if (<string>sortOrder === '1') {
+      queryBuilder.orderBy(`ship.${sortBy}`, 'ASC');
+    } else {
+      queryBuilder.orderBy(`ship.${sortBy}`, 'DESC');
+    }
     return paginate<Ship>(queryBuilder, options);
   }
 
