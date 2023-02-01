@@ -28,7 +28,7 @@ export class TaskForceService {
     return paginate<TaskForce>(this.taskForceRepository, options);
   }
 
-  async findOne(id: string): Promise<TaskForce> {
+  async findOne(id: string): Promise<any> {
     const taskForce = await this.taskForceRepository.findOne({
       where: { id },
       relations: { ships: true },
@@ -39,8 +39,8 @@ export class TaskForceService {
         HttpStatus.BAD_REQUEST,
       );
     } else {
-      taskForce.ships.forEach(x => console.log(x.name));
-      return this.taskForceRepository.findOneBy({ id });
+      // taskForce.ships.forEach((x) => console.log(x.name));
+      return taskForce;
     }
   }
 
@@ -79,7 +79,7 @@ export class TaskForceService {
     ship.taskForce = tf;
     await this.shipRepository.update(shipId, ship);
 
-    return `${ship.name} was assigned to ${tf.name}`
+    return `${ship.name} was assigned to ${tf.name}`;
   }
 
   async removeVessel(tfId: string, shipId: string) {
@@ -95,18 +95,21 @@ export class TaskForceService {
     ship.taskForce = null;
     await this.shipRepository.update(shipId, ship);
 
-    return `${ship.name} was removed from ${tf.name}`
+    return `${ship.name} was removed from ${tf.name}`;
   }
 
-
-  async getAllOfTaskForce(id: string, options: IPaginationOptions): Promise<Pagination<Ship>> {
+  async getAllOfTaskForce(
+    id: string,
+    options: IPaginationOptions,
+  ): Promise<Pagination<Ship>> {
     const tf = await this.taskForceRepository.findOneBy({ id: id });
     if (!tf) {
       throw new HttpException('The TF does not exist', HttpStatus.NOT_FOUND);
     }
 
-    const queryBuilder = this.shipRepository.createQueryBuilder('ships')
-      .where('ships.taskForceId = :id', { id: id })
+    const queryBuilder = this.shipRepository
+      .createQueryBuilder('ships')
+      .where('ships.taskForceId = :id', { id: id });
 
     return paginate<Ship>(queryBuilder, options);
   }

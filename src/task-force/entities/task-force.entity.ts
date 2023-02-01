@@ -9,6 +9,6 @@ export class TaskForce {
   @Column({ name: 'name' })
   name: string;
 
-  @OneToMany(() => Ship, (ship) => ship.taskForce)
+  @OneToMany(() => Ship, (ship) => ship.taskForce, { eager: true })
   ships: Ship[];
 }

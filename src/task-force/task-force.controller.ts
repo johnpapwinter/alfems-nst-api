@@ -8,18 +8,20 @@ import {
   Delete,
   Query,
   DefaultValuePipe,
-  ParseIntPipe, Put, UseGuards
-} from "@nestjs/common";
+  ParseIntPipe,
+  Put,
+  UseGuards,
+} from '@nestjs/common';
 import { TaskForceService } from './task-force.service';
 import { CreateTaskForceDto } from './dto/create-task-force.dto';
 import { UpdateTaskForceDto } from './dto/update-task-force.dto';
 import { Pagination } from 'nestjs-typeorm-paginate';
 import { TaskForce } from './entities/task-force.entity';
-import { Ship } from "../ship/entities/ship.entity";
-import { Public } from "../auth/public.decorator";
-import { Roles } from "../auth/role/roles.decorator";
-import { RoleEnum } from "../auth/role/role.enum";
-import { RolesGuard } from "../auth/role/roles.guard";
+import { Ship } from '../ship/entities/ship.entity';
+import { Public } from '../auth/public.decorator';
+import { Roles } from '../auth/role/roles.decorator';
+import { RoleEnum } from '../auth/role/role.enum';
+import { RolesGuard } from '../auth/role/roles.guard';
 
 @Controller('task-force')
 export class TaskForceController {
@@ -90,8 +92,6 @@ export class TaskForceController {
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit = 10,
   ): Promise<Pagination<Ship>> {
-
     return this.taskForceService.getAllOfTaskForce(id, { page, limit });
   }
-
 }
