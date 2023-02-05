@@ -42,9 +42,27 @@ export class TaskForceController {
     return this.taskForceService.getAll({ page, limit });
   }
 
+  @Get('/test')
+  async getAllTest(
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit = 10,
+  ): Promise<Pagination<TaskForce>> {
+    return this.taskForceService.getAllTest({ page, limit });
+  }
+
+  @Get('/all')
+  async findAll() {
+    return this.taskForceService.findAll();
+  }
+
   @Get(':id')
   async findOne(@Param('id') id: string) {
     return await this.taskForceService.findOne(id);
+  }
+
+  @Get('/name/:name')
+  async findByName(@Param('name') name: string) {
+    return await this.taskForceService.findByName(name);
   }
 
   @Roles(RoleEnum.Admin)

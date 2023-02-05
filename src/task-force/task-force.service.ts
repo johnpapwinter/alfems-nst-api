@@ -3,7 +3,7 @@ import { CreateTaskForceDto } from './dto/create-task-force.dto';
 import { UpdateTaskForceDto } from './dto/update-task-force.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TaskForce } from './entities/task-force.entity';
-import { Repository } from 'typeorm';
+import { FindOptionsOrder, Repository } from "typeorm";
 import {
   IPaginationOptions,
   paginate,
@@ -25,7 +25,35 @@ export class TaskForceService {
   }
 
   async getAll(options: IPaginationOptions): Promise<Pagination<TaskForce>> {
-    return paginate<TaskForce>(this.taskForceRepository, options);
+
+    return paginate<TaskForce>(
+      this.taskForceRepository,
+      options,
+      { order: { name: "ASC" }}
+    );
+  }
+
+  async getAllTest(options: IPaginationOptions): Promise<Pagination<TaskForce>> {
+    let alpha: FindOptionsOrder<any> = {};
+
+    const queryBuilder = this.taskForceRepository.createQueryBuilder('tf');
+    queryBuilder.leftJoinAndSelect('tf.ships', 'ships')
+      .orderBy('tf.id', 'ASC');
+    // queryBuilder.addFrom(Ship, 'ship')
+      // .where('ship.taskForceId = tf.id')
+
+    // return paginate(queryBuilder, options);
+    return paginate<TaskForce>(
+      this.taskForceRepository,
+      options,
+      {
+        relations: { ships: true },
+        order: { id: "ASC" }
+      });
+  }
+
+  async findAll(): Promise<TaskForce[]> {
+    return await this.taskForceRepository.find();
   }
 
   async findOne(id: string): Promise<any> {
@@ -40,6 +68,21 @@ export class TaskForceService {
       );
     } else {
       // taskForce.ships.forEach((x) => console.log(x.name));
+      return taskForce;
+    }
+  }
+
+  async findByName(name: string): Promise<any> {
+    const taskForce = await this.taskForceRepository.findOne({
+      where: { name },
+      relations: { ships: true },
+    });
+    if (!taskForce) {
+      throw new HttpException(
+        'This task force does not exist',
+        HttpStatus.BAD_REQUEST,
+      );
+    } else {
       return taskForce;
     }
   }
