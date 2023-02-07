@@ -42,7 +42,7 @@ export class ShipController {
     return this.shipService.getAll({ page, limit }, sortBy, sortOrder);
   }
 
-  @Get(':id')
+  @Get('/name/:id')
   async findOne(@Param('id') id: string) {
     return await this.shipService.findOne(id);
   }
@@ -61,8 +61,8 @@ export class ShipController {
     return await this.shipService.remove(id);
   }
 
-  // @Get()
+  @Get('/all')
   async findAll() {
-    return await this.shipService.findAll();
+    return this.shipService.findAll();
   }
 }

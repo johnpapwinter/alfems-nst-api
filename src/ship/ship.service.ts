@@ -21,10 +21,6 @@ export class ShipService {
     return this.shipRepository.save(createShipDto);
   }
 
-  async findAll(): Promise<Ship[]> {
-    return this.shipRepository.find();
-  }
-
   async getAll(
     options: IPaginationOptions,
     sortBy: string,
@@ -38,6 +34,14 @@ export class ShipService {
       queryBuilder.orderBy(`ship.${sortBy}`, 'DESC');
     }
     return paginate<Ship>(queryBuilder, options);
+  }
+
+  async findAll(): Promise<Ship[]> {
+    return await this.shipRepository.find(
+      {
+        order: { name: 'ASC' },
+        relations: { taskForce: true } }
+    );
   }
 
   async findOne(id: string): Promise<Ship> {
