@@ -24,6 +24,8 @@ export class Ship {
   @Column({ name: 'fighters', nullable: true })
   fighters: number;
 
-  @ManyToOne(() => TaskForce, (taskForce) => taskForce.ships)
+  @ManyToOne(() => TaskForce, (taskForce) => taskForce.ships,
+    // { eager: true }
+  )
   taskForce: TaskForce;
 }

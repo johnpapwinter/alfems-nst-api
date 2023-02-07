@@ -42,6 +42,16 @@ export class ShipController {
     return this.shipService.getAll({ page, limit }, sortBy, sortOrder);
   }
 
+  @Get('/unassigned')
+  async getAllUnassigned(
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit = 10,
+    @Query('sortBy') sortBy?: string,
+    @Query('asc') sortOrder?: number,
+  ): Promise<Pagination<Ship>> {
+    return this.shipService.getAllUnassigned({ page, limit }, sortBy, sortOrder);
+  }
+
   @Get('/name/:id')
   async findOne(@Param('id') id: string) {
     return await this.shipService.findOne(id);
