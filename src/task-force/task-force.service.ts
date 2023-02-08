@@ -122,7 +122,8 @@ export class TaskForceService {
     ship.taskForce = tf;
     await this.shipRepository.update(shipId, ship);
 
-    return `${ship.name} was assigned to ${tf.name}`;
+    return tf;
+    // return `${ship.name} was assigned to ${tf.name}`;
   }
 
   async removeVessel(tfId: string, shipId: string) {
@@ -138,7 +139,8 @@ export class TaskForceService {
     ship.taskForce = null;
     await this.shipRepository.update(shipId, ship);
 
-    return `${ship.name} was removed from ${tf.name}`;
+    return tf;
+    // return `${ship.name} was removed from ${tf.name}`;
   }
 
   async getAllOfTaskForce(
