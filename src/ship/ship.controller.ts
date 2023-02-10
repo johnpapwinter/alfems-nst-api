@@ -20,6 +20,7 @@ import { Ship } from './entities/ship.entity';
 import { Roles } from '../auth/role/roles.decorator';
 import { RoleEnum } from '../auth/role/role.enum';
 import { RolesGuard } from '../auth/role/roles.guard';
+import { SearchShipDto } from "./dto/search-ship.dto";
 
 @Controller('ship')
 export class ShipController {
@@ -74,5 +75,16 @@ export class ShipController {
   @Get('/all')
   async findAll() {
     return this.shipService.findAll();
+  }
+
+  @Post('/search-dynamic')
+  async findByParams(
+    @Body() searchParams: SearchShipDto,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit = 10,
+    @Query('sortBy') sortBy?: string,
+    @Query('asc') sortOrder?: number,
+    ): Promise<Pagination<Ship>> {
+    return this.shipService.findByParams(searchParams, { page, limit }, sortBy, sortOrder);
   }
 }

@@ -9,6 +9,7 @@ import {
   paginate,
   Pagination,
 } from 'nestjs-typeorm-paginate';
+import { SearchShipDto } from "./dto/search-ship.dto";
 
 @Injectable()
 export class ShipService {
@@ -92,5 +93,39 @@ export class ShipService {
       );
     }
     return this.shipRepository.delete(id);
+  }
+
+  async findByParams(
+    searchParams: SearchShipDto,
+    options: IPaginationOptions,
+    sortBy: string,
+    sortOrder: number,
+  ): Promise<Pagination<Ship>> {
+    const queryBuilder = this.shipRepository.createQueryBuilder('ship');
+
+    if (searchParams.name !== null) {
+      queryBuilder.andWhere(`ship.name = :name`, { name: searchParams.name });
+    }
+
+    if (searchParams.type !== null) {
+      queryBuilder.andWhere('ship.type = :type', { type: searchParams.type });
+    }
+
+    if (searchParams.fighters !== null) {
+      if (searchParams.fighters === true) {
+        queryBuilder.andWhere("ship.fighters > 0");
+      } else {
+        queryBuilder.andWhere("ship.fighters = 0");
+      }
+    }
+
+    // @ts-ignore
+    if (<string>sortOrder === '1') {
+      queryBuilder.orderBy(`ship.${sortBy}`, 'ASC');
+    } else {
+      queryBuilder.orderBy(`ship.${sortBy}`, 'DESC');
+    }
+
+    return paginate<Ship>(queryBuilder, options);
   }
 }
