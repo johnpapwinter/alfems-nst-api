@@ -9,7 +9,7 @@ import {
   paginate,
   Pagination,
 } from 'nestjs-typeorm-paginate';
-import { SearchShipDto } from "./dto/search-ship.dto";
+import { SearchShipDto } from './dto/search-ship.dto';
 
 @Injectable()
 export class ShipService {
@@ -19,6 +19,16 @@ export class ShipService {
   ) {}
 
   async create(createShipDto: CreateShipDto) {
+    const ship = await this.shipRepository.findOneBy({
+      name: createShipDto.name,
+    });
+    if (ship && ship.hud === createShipDto.hud) {
+      throw new HttpException(
+        'The ship is already in the registry',
+        HttpStatus.FOUND,
+      );
+    }
+
     return this.shipRepository.save(createShipDto);
   }
 
@@ -43,7 +53,7 @@ export class ShipService {
     sortOrder: number,
   ): Promise<Pagination<Ship>> {
     const queryBuilder = this.shipRepository.createQueryBuilder('ship');
-    queryBuilder.where('ship.taskForceId IS NULL')
+    queryBuilder.where('ship.taskForceId IS NULL');
     // @ts-ignore
     if (<string>sortOrder === '1') {
       queryBuilder.orderBy(`ship.${sortBy}`, 'ASC');
@@ -54,11 +64,10 @@ export class ShipService {
   }
 
   async findAll(): Promise<Ship[]> {
-    return await this.shipRepository.find(
-      {
-        order: { name: 'ASC' },
-        relations: { taskForce: true } }
-    );
+    return await this.shipRepository.find({
+      order: { name: 'ASC' },
+      relations: { taskForce: true },
+    });
   }
 
   async findOne(id: string): Promise<Ship> {
@@ -113,9 +122,9 @@ export class ShipService {
 
     if (searchParams.fighters !== null) {
       if (searchParams.fighters === true) {
-        queryBuilder.andWhere("ship.fighters > 0");
+        queryBuilder.andWhere('ship.fighters > 0');
       } else {
-        queryBuilder.andWhere("ship.fighters = 0");
+        queryBuilder.andWhere('ship.fighters = 0');
       }
     }
 

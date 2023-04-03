@@ -3,7 +3,7 @@ import { CreateTaskForceDto } from './dto/create-task-force.dto';
 import { UpdateTaskForceDto } from './dto/update-task-force.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TaskForce } from './entities/task-force.entity';
-import { FindOptionsOrder, Repository } from "typeorm";
+import { FindOptionsOrder, Repository } from 'typeorm';
 import {
   IPaginationOptions,
   paginate,
@@ -21,35 +21,39 @@ export class TaskForceService {
   ) {}
 
   async create(createTaskForceDto: CreateTaskForceDto) {
+    const tf = await this.taskForceRepository.findOneBy({
+      name: createTaskForceDto.name,
+    });
+    if (tf) {
+      throw new HttpException(
+        'The task force already exists',
+        HttpStatus.FOUND,
+      );
+    }
     return this.taskForceRepository.save(createTaskForceDto);
   }
 
   async getAll(options: IPaginationOptions): Promise<Pagination<TaskForce>> {
-
-    return paginate<TaskForce>(
-      this.taskForceRepository,
-      options,
-      { order: { name: "ASC" }}
-    );
+    return paginate<TaskForce>(this.taskForceRepository, options, {
+      order: { name: 'ASC' },
+    });
   }
 
-  async getAllTest(options: IPaginationOptions): Promise<Pagination<TaskForce>> {
-    let alpha: FindOptionsOrder<any> = {};
+  async getAllTest(
+    options: IPaginationOptions,
+  ): Promise<Pagination<TaskForce>> {
+    const alpha: FindOptionsOrder<any> = {};
 
     const queryBuilder = this.taskForceRepository.createQueryBuilder('tf');
-    queryBuilder.leftJoinAndSelect('tf.ships', 'ships')
-      .orderBy('tf.id', 'ASC');
+    queryBuilder.leftJoinAndSelect('tf.ships', 'ships').orderBy('tf.id', 'ASC');
     // queryBuilder.addFrom(Ship, 'ship')
-      // .where('ship.taskForceId = tf.id')
+    // .where('ship.taskForceId = tf.id')
 
     // return paginate(queryBuilder, options);
-    return paginate<TaskForce>(
-      this.taskForceRepository,
-      options,
-      {
-        relations: { ships: true },
-        order: { id: "ASC" }
-      });
+    return paginate<TaskForce>(this.taskForceRepository, options, {
+      relations: { ships: true },
+      order: { id: 'ASC' },
+    });
   }
 
   async findAll(): Promise<TaskForce[]> {
