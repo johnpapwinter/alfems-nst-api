@@ -14,21 +14,42 @@ import { JwtAuthGuard } from "./auth/jwt-auth.guard";
 import { JwtService } from "@nestjs/jwt";
 import { ShipAudit } from "./ship/entities/ship.audit.entity";
 import { AuditingSubscriber } from "typeorm-auditing";
+import { ConfigModule, ConfigService } from "@nestjs/config";
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: 'localhost',
-      port: 5432,
-      username: 'postgres',
-      password: 'password',
-      database: 'alfemsdb',
-      entities: [Ship, TaskForce, User, Role, ShipAudit],
-      subscribers: [AuditingSubscriber],
-      synchronize: true,
-      autoLoadEntities: true,
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: `./src/.env`
     }),
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (config: ConfigService) => ({
+          type: 'postgres',
+          host: config.get('DB_HOST'),
+          port: config.get('DB_PORT'),
+          username: config.get('DB_USERNAME'),
+          password: config.get('DB_PASSWORD'),
+          database: config.get('DB_NAME'),
+          entities: [Ship, TaskForce, User, Role, ShipAudit],
+          subscribers: [AuditingSubscriber],
+          synchronize: true,
+          autoLoadEntities: true
+        }),
+      inject: [ConfigService],
+    }),
+    // TypeOrmModule.forRoot({
+    //   type: 'postgres',
+    //   host: 'localhost',
+    //   port: 5432,
+    //   username: 'postgres',
+    //   password: 'password',
+    //   database: 'alfemsdb',
+    //   entities: [Ship, TaskForce, User, Role, ShipAudit],
+    //   subscribers: [AuditingSubscriber],
+    //   synchronize: true,
+    //   autoLoadEntities: true,
+    // }),
     ShipModule,
     TaskForceModule,
     AuthModule,
