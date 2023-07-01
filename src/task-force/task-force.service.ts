@@ -2,6 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateTaskForceDto } from './dto/create-task-force.dto';
 import { UpdateTaskForceDto } from './dto/update-task-force.dto';
 import { InjectRepository } from '@nestjs/typeorm';
+import * as ExcelJS from 'exceljs';
 import { TaskForce } from './entities/task-force.entity';
 import { FindOptionsOrder, Repository } from 'typeorm';
 import {
@@ -10,6 +11,7 @@ import {
   Pagination,
 } from 'nestjs-typeorm-paginate';
 import { Ship } from '../ship/entities/ship.entity';
+// import { Buffer } from "exceljs/index";
 
 @Injectable()
 export class TaskForceService {
@@ -161,5 +163,28 @@ export class TaskForceService {
       .where('ships.taskForceId = :id', { id: id });
 
     return paginate<Ship>(queryBuilder, options);
+  }
+
+  async exportTaskForceToExcel(id: string) {
+    const taskForce = await this.taskForceRepository.findOne({
+      where: { id },
+      relations: { ships: true },
+    });
+    if (!taskForce) {
+      throw new HttpException('The TF does not exist', HttpStatus.NOT_FOUND);
+    }
+
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet(`${taskForce.name}`);
+
+    const headers = ['ID', 'HUD', 'Name', 'Type', 'Crew', 'Pass', 'Ftr']
+    worksheet.addRow(headers);
+
+    taskForce.ships.forEach(ship => {
+      const values = Object.values(ship);
+      worksheet.addRow(values);
+    });
+
+    return await workbook.xlsx.writeBuffer();
   }
 }
