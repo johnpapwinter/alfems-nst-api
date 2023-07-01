@@ -10,8 +10,8 @@ import {
   DefaultValuePipe,
   ParseIntPipe,
   Put,
-  UseGuards,
-} from '@nestjs/common';
+  UseGuards, Res
+} from "@nestjs/common";
 import { TaskForceService } from './task-force.service';
 import { CreateTaskForceDto } from './dto/create-task-force.dto';
 import { UpdateTaskForceDto } from './dto/update-task-force.dto';
@@ -22,6 +22,7 @@ import { Public } from '../auth/public.decorator';
 import { Roles } from '../auth/role/roles.decorator';
 import { RoleEnum } from '../auth/role/role.enum';
 import { RolesGuard } from '../auth/role/roles.guard';
+import { Response } from 'express';
 
 @Controller('task-force')
 export class TaskForceController {
@@ -111,5 +112,16 @@ export class TaskForceController {
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit = 10,
   ): Promise<Pagination<Ship>> {
     return this.taskForceService.getAllOfTaskForce(id, { page, limit });
+  }
+
+  @Get(':id/export')
+  async exportToExcel(@Param('id') id: string, @Res() res: Response) {
+    const buffer = await this.taskForceService.exportTaskForceToExcel(id);
+
+    res.set({
+      'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      'Content-Disposition': `attachment; filename=tf_${id}_list.xlsx`,
+    })
+    res.send(buffer);
   }
 }
