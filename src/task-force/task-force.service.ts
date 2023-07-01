@@ -179,11 +179,17 @@ export class TaskForceService {
 
     const headers = ['ID', 'HUD', 'Name', 'Type', 'Crew', 'Pass', 'Ftr']
     worksheet.addRow(headers);
+    worksheet.getRow(1).font = { bold: true, underline: true };
+    worksheet.getRow(1).alignment = { horizontal: 'center' };
 
     taskForce.ships.forEach(ship => {
       const values = Object.values(ship);
       worksheet.addRow(values);
     });
+
+    worksheet.eachRow(row => {
+      row.alignment= { horizontal: 'center' }
+    })
 
     return await workbook.xlsx.writeBuffer();
   }
