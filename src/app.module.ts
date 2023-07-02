@@ -15,6 +15,12 @@ import { JwtService } from "@nestjs/jwt";
 import { ShipAudit } from "./ship/entities/ship.audit.entity";
 import { AuditingSubscriber } from "typeorm-auditing";
 import { ConfigModule, ConfigService } from "@nestjs/config";
+import { MailerModule } from "@nestjs-modules/mailer";
+import { ScheduleModule } from "@nestjs/schedule";
+import { MailModule } from './mail/mail.module';
+import { TasksService } from "./tasks/tasks.service";
+import { join } from 'path';
+import { HandlebarsAdapter } from "@nestjs-modules/mailer/dist/adapters/handlebars.adapter";
 
 @Module({
   imports: [
@@ -38,9 +44,36 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
         }),
       inject: [ConfigService],
     }),
+    MailerModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => ({
+        transport: {
+          host: configService.get('SMTP_HOST'),
+          port: configService.get('SMTP_PORT'),
+          secure: false,
+          auth: {
+            user: configService.get('SMTP_USERNAME'),
+            pass: configService.get('SMTP_PASSWORD'),
+          }
+        },
+        defaults: {
+          from: configService.get('EMAIL_SENDER')
+        },
+        template: {
+          dir: join(__dirname, 'templates'),
+          adapter: new HandlebarsAdapter(),
+          options: {
+            strict: true
+          }
+        }
+      }),
+      inject: [ConfigService]
+    }),
+    ScheduleModule.forRoot(),
     ShipModule,
     TaskForceModule,
     AuthModule,
+    MailModule,
   ],
   controllers: [AppController],
   providers: [
@@ -49,7 +82,8 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
     },
-    JwtService
+    JwtService,
+    TasksService
   ],
 })
 export class AppModule {}
