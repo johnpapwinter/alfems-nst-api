@@ -11,13 +11,17 @@ export class MailService {
               private configService: ConfigService) {
   }
 
-  async sendEmail(to: string, subject: string, name: string, xlsBuffer: Buffer, filename: string) {
+  async sendUnassignedShipsEmail(
+    xlsBuffer: Buffer,
+    filename: string,
+    bccRecipients: string[]
+  ) {
     await this.mailerService.sendMail({
       from: this.configService.get('EMAIL_SENDER'),
-      to: to,
-      subject: subject,
+      to: this.configService.get('EMAIL_SENDER'),
+      bcc: bccRecipients,
+      subject: 'Unassigned Ships Report',
       template: 'report_email',
-      context: { name },
       attachments: [
         {
           filename,

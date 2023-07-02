@@ -10,6 +10,7 @@ import {
   Pagination,
 } from 'nestjs-typeorm-paginate';
 import { SearchShipDto } from './dto/search-ship.dto';
+import * as ExcelJS from "exceljs";
 
 @Injectable()
 export class ShipService {
@@ -136,5 +137,30 @@ export class ShipService {
     }
 
     return paginate<Ship>(queryBuilder, options);
+  }
+
+  async exportUnassignedShipsToExcel() {
+    const unassignedShips = await this.shipRepository.find({
+      where: { taskForce: null }
+    });
+
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet(`Unassigned_ships`);
+
+    const headers = ['ID', 'HUD', 'Name', 'Type', 'Crew', 'Pass', 'Ftr']
+    worksheet.addRow(headers);
+    worksheet.getRow(1).font = { bold: true, underline: true };
+    worksheet.getRow(1).alignment = { horizontal: 'center' };
+
+    unassignedShips.forEach(ship => {
+      const values = Object.values(ship);
+      worksheet.addRow(values);
+    });
+
+    worksheet.eachRow(row => {
+      row.alignment= { horizontal: 'center' }
+    })
+
+    return await workbook.xlsx.writeBuffer();
   }
 }
