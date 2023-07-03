@@ -39,4 +39,11 @@ export class UserService {
       relations: { roles: true },
     });
   }
+
+  async findAllAdmins() {
+    return this.userRepository.createQueryBuilder('user')
+      .leftJoinAndSelect('user.roles', 'role')
+      .where('role.name = :roleName', { roleName: 'ADMIN' })
+      .getMany();
+  }
 }

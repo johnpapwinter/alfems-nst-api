@@ -19,5 +19,6 @@ import { ShipAudit } from "./entities/ship.audit.entity";
     },
     JwtService
   ],
+  exports: [ShipService]
 })
 export class ShipModule {}
