@@ -140,8 +140,10 @@ export class ShipService {
   }
 
   async exportUnassignedShipsToExcel() {
+    // to fix - returns all ships
     const unassignedShips = await this.shipRepository.find({
-      where: { taskForce: null }
+      where: { taskForce: null },
+      relations: { taskForce: true }
     });
 
     const workbook = new ExcelJS.Workbook();
@@ -152,9 +154,11 @@ export class ShipService {
     worksheet.getRow(1).font = { bold: true, underline: true };
     worksheet.getRow(1).alignment = { horizontal: 'center' };
 
-    unassignedShips.forEach(ship => {
-      const values = Object.values(ship);
-      worksheet.addRow(values);
+    unassignedShips
+      .filter(ship => ship.taskForce === null)
+      .forEach(ship => {
+        const values = Object.values(ship);
+        worksheet.addRow(values);
     });
 
     worksheet.eachRow(row => {

@@ -15,8 +15,6 @@ export class TasksService {
 
   @Cron(CronExpression.EVERY_1ST_DAY_OF_MONTH_AT_MIDNIGHT)
   async handleEndOfMonthTask() {
-    this.logger.debug('End of Month Task');
-
     const xlsBuffer = await this.shipService.exportUnassignedShipsToExcel();
     const adminUsers = await this.userService.findAllAdmins();
 
@@ -25,6 +23,7 @@ export class TasksService {
       'unassigned_ship.xlsx',
       adminUsers.map(user => user.username)
     );
+
   }
 
 }
