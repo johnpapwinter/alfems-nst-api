@@ -6,6 +6,7 @@ async function bootstrap() {
   app.enableCors({
     exposedHeaders: '*'
   });
+
   await app.listen(3000);
 }
 bootstrap();

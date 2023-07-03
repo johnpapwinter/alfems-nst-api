@@ -21,6 +21,7 @@ import { MailModule } from './mail/mail.module';
 import { TasksService } from "./tasks/tasks.service";
 import { join } from 'path';
 import { HandlebarsAdapter } from "@nestjs-modules/mailer/dist/adapters/handlebars.adapter";
+import { ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler";
 
 @Module({
   imports: [
@@ -69,6 +70,14 @@ import { HandlebarsAdapter } from "@nestjs-modules/mailer/dist/adapters/handleba
       }),
       inject: [ConfigService]
     }),
+    ThrottlerModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (config: ConfigService) => ({
+        ttl: config.get('THROTTLE_TTL'),
+        limit: config.get('THROTTLE_LIMIT'),
+      }),
+      inject: [ConfigService],
+    }),
     ScheduleModule.forRoot(),
     ShipModule,
     TaskForceModule,
@@ -81,6 +90,10 @@ import { HandlebarsAdapter } from "@nestjs-modules/mailer/dist/adapters/handleba
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard
     },
     JwtService,
     TasksService
