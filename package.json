@@ -29,6 +29,7 @@
     "@nestjs/passport": "^9.0.0",
     "@nestjs/platform-express": "^9.0.0",
     "@nestjs/schedule": "^3.0.1",
+    "@nestjs/throttler": "^4.1.0",
     "@nestjs/typeorm": "^9.0.1",
     "bcrypt": "^5.1.0",
     "exceljs": "^4.3.0",
