@@ -1,14 +1,14 @@
-import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { ShipModule } from './ship/ship.module';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { Ship } from './ship/entities/ship.entity';
-import { TaskForceModule } from './task-force/task-force.module';
-import { TaskForce } from './task-force/entities/task-force.entity';
-import { AuthModule } from './auth/auth.module';
-import { User } from './auth/user/entities/user.entity';
-import { Role } from './auth/role/entities/role.entity';
+import { Module, OnApplicationBootstrap } from "@nestjs/common";
+import { AppController } from "./app.controller";
+import { AppService } from "./app.service";
+import { ShipModule } from "./ship/ship.module";
+import { TypeOrmModule } from "@nestjs/typeorm";
+import { Ship } from "./ship/entities/ship.entity";
+import { TaskForceModule } from "./task-force/task-force.module";
+import { TaskForce } from "./task-force/entities/task-force.entity";
+import { AuthModule } from "./auth/auth.module";
+import { User } from "./auth/user/entities/user.entity";
+import { Role } from "./auth/role/entities/role.entity";
 import { APP_GUARD } from "@nestjs/core";
 import { JwtAuthGuard } from "./auth/jwt-auth.guard";
 import { JwtService } from "@nestjs/jwt";
@@ -17,11 +17,14 @@ import { AuditingSubscriber } from "typeorm-auditing";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { MailerModule } from "@nestjs-modules/mailer";
 import { ScheduleModule } from "@nestjs/schedule";
-import { MailModule } from './mail/mail.module';
+import { MailModule } from "./mail/mail.module";
 import { TasksService } from "./tasks/tasks.service";
-import { join } from 'path';
+import { join } from "path";
 import { HandlebarsAdapter } from "@nestjs-modules/mailer/dist/adapters/handlebars.adapter";
 import { ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler";
+import { UserService } from "./auth/user/user.service";
+import { CreateUserDto } from "./auth/user/dto/create-user.dto";
+import { RoleEnum } from "./auth/role/role.enum";
 
 @Module({
   imports: [
@@ -99,4 +102,22 @@ import { ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler";
     TasksService
   ],
 })
-export class AppModule {}
+export class AppModule implements OnApplicationBootstrap {
+  constructor(private readonly userService: UserService,
+              private readonly configService: ConfigService) {
+  }
+
+  async onApplicationBootstrap() {
+    let adminDTO: CreateUserDto = {
+      username: this.configService.get('ADMIN_USERNAME'),
+      password: this.configService.get('ADMIN_PASSWORD'),
+      roles: [{ name: RoleEnum.Admin }] };
+
+    const admin = await this.userService.findOne(this.configService.get('ADMIN_USERNAME'));
+
+    if (!admin) {
+      this.userService.create(adminDTO);
+    };
+
+  }
+}
